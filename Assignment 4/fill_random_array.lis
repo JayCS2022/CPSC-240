@@ -1,0 +1,108 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Non-deterministic Random Numbers".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Non-deterministic Random Numbers
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to create numbers, normalize the numbers the program created, sort the numbers, and print the numbers.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: main.c, execute.asm, fill_random_array.asm, normalize_array.asm, show_array.asm, isnan.asm, sort.c, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l fill_random_array.lis -o fill_random_array.o fill_random_array.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  global fill_random_array
+    35                                  
+    36                                  extern isnan
+    37                                  
+    38                                  segment .data
+    39                                  
+    40                                  segment .bss
+    41                                      align 64
+    42                                  
+    43                                  segment .text
+    44                                      fill_random_array:
+    45 00000000 55                              push rbp
+    46 00000001 4889E5                          mov rbp, rsp
+    47 00000004 53                              push rbx
+    48 00000005 51                              push rcx
+    49 00000006 52                              push rdx
+    50 00000007 57                              push rdi
+    51 00000008 56                              push rsi
+    52 00000009 4150                            push r8
+    53 0000000B 4151                            push r9
+    54 0000000D 4152                            push r10
+    55 0000000F 4153                            push r11
+    56 00000011 4154                            push r12
+    57 00000013 4155                            push r13
+    58 00000015 4156                            push r14
+    59 00000017 4157                            push r15
+    60 00000019 9C                              pushf
+    61                                  
+    62 0000001A 4989FF                          mov r15, rdi    ;holds our array
+    63 0000001D 4989F6                          mov r14, rsi    ;holds the number of values
+    64 00000020 41BD00000000                    mov r13, 0      ;our counter
+    65                                  
+    66                                          ;This code block makes sure that the program only creates the specified amount of numbers
+    67                                          array_capacity:
+    68 00000026 4D39F5                              cmp r13, r14
+    69 00000029 7C02                                jl Start_code
+    70 0000002B EB31                                jmp finish
+    71                                  
+    72                                          ;This code block creates and stores the numbers
+    73                                          Start_code:
+    74 0000002D B800000000                          mov rax, 0
+    75 00000032 490FC7F4                            rdrand r12
+    76 00000036 4C89E7                              mov rdi, r12
+    77 00000039 4154                                push r12
+    78 0000003B 4154                                push r12
+    79 0000003D F2440F103C24                        movsd xmm15, [rsp]
+    80 00000043 415C                                pop r12
+    81 00000045 415C                                pop r12
+    82                                  
+    83 00000047 F2410F10C7                          movsd xmm0, xmm15
+    84 0000004C E8(00000000)                        call isnan
+    85 00000051 74DA                                je Start_code
+    86                                  
+    87 00000053 F2470F113CEF                        movsd [r15 + r13 * 8], xmm15
+    88 00000059 49FFC5                              inc r13
+    89 0000005C EBC8                                jmp array_capacity
+    90                                  
+    91                                          ;Completes the execution of the file
+    92                                          finish:
+    93 0000005E 9D                                  popf
+    94 0000005F 415F                                pop r15
+    95 00000061 415E                                pop r14
+    96 00000063 415D                                pop r13
+    97 00000065 415C                                pop r12
+    98 00000067 415B                                pop r11
+    99 00000069 415A                                pop r10
+   100 0000006B 4159                                pop r9
+   101 0000006D 4158                                pop r8
+   102 0000006F 5E                                  pop rsi
+   103 00000070 5F                                  pop rdi
+   104 00000071 5A                                  pop rdx
+   105 00000072 59                                  pop rcx
+   106 00000073 5B                                  pop rbx
+   107 00000074 5D                                  pop rbp
+   108 00000075 C3                                  ret

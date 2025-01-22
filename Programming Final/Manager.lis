@@ -1,0 +1,183 @@
+     1                                  extern printf
+     2                                  extern scanf
+     3                                  extern Input_array
+     4                                  extern Output_array
+     5                                  extern hmean
+     6                                  extern Sort
+     7                                  extern fgets
+     8                                  extern printf
+     9                                  extern scanf
+    10                                  extern stdin
+    11                                  extern strlen
+    12                                  global Manager
+    13                                  
+    14                                  null equ 0
+    15                                  
+    16                                  segment .data
+    17 00000000 0A546869732070726F-         program_overview db 10, "This program will sum your array of integers", 10, 0
+    17 00000009 6772616D2077696C6C-
+    17 00000012 2073756D20796F7572-
+    17 0000001B 206172726179206F66-
+    17 00000024 20696E746567657273-
+    17 0000002D 0A00               
+    18 0000002F 456E74657220612073-         first_prompt db "Enter a sequence of up to 10 float numbers that are not zero. separated by white space.", 10
+    18 00000038 657175656E6365206F-
+    18 00000041 6620757020746F2031-
+    18 0000004A 3020666C6F6174206E-
+    18 00000053 756D62657273207468-
+    18 0000005C 617420617265206E6F-
+    18 00000065 74207A65726F2E2073-
+    18 0000006E 657061726174656420-
+    18 00000077 627920776869746520-
+    18 00000080 73706163652E0A     
+    19 00000087 416674657220746865-                     db "After the last input press enter followed by Control+D: ", 10, 0
+    19 00000090 206C61737420696E70-
+    19 00000099 757420707265737320-
+    19 000000A2 656E74657220666F6C-
+    19 000000AB 6C6F77656420627920-
+    19 000000B4 436F6E74726F6C2B44-
+    19 000000BD 3A200A00           
+    20 000000C1 0A5468657365206E75-         array_message db 10, "These number were received and placed into the array:", 10, 0
+    20 000000CA 6D6265722077657265-
+    20 000000D3 207265636569766564-
+    20 000000DC 20616E6420706C6163-
+    20 000000E5 656420696E746F2074-
+    20 000000EE 68652061727261793A-
+    20 000000F7 0A00               
+    21 000000F9 0A0A54686520686172-         array_sum_message db 10 , 10, "The harmonic sum of the numbers in this array is %lf.", 10, 0
+    21 00000102 6D6F6E69632073756D-
+    21 0000010B 206F6620746865206E-
+    21 00000114 756D6265727320696E-
+    21 0000011D 207468697320617272-
+    21 00000126 617920697320256C66-
+    21 0000012F 2E0A00             
+    22 00000132 0A5468697320697320-         sorted_array db 10, "This is the sorted array", 10, 0
+    22 0000013B 74686520736F727465-
+    22 00000144 642061727261790A00 
+    23 0000014D 0A0A54686973207072-         completed db 10, 10, "This program will return execution to the main function.", 10, 10, 0
+    23 00000156 6F6772616D2077696C-
+    23 0000015F 6C2072657475726E20-
+    23 00000168 657865637574696F6E-
+    23 00000171 20746F20746865206D-
+    23 0000017A 61696E2066756E6374-
+    23 00000183 696F6E2E0A0A00     
+    24 0000018A 0A00                        newline db 10, 0
+    25 0000018C 256C6600                    floatform db "%lf", 0
+    26                                  
+    27                                  segment .bss
+    28 00000000 <res 320h>                  array resq 100
+    29 00000320 <res 50h>                   array_size resq 10
+    30 00000370 <res 320h>                  array_sum resq 100
+    31                                  
+    32                                  
+    33                                  segment .text
+    34                                      Manager:
+    35 00000000 55                              push rbp
+    36 00000001 4889E5                          mov rbp, rsp
+    37 00000004 53                              push rbx
+    38 00000005 51                              push rcx
+    39 00000006 52                              push rdx
+    40 00000007 57                              push rdi
+    41 00000008 56                              push rsi
+    42 00000009 4150                            push r8
+    43 0000000B 4151                            push r9
+    44 0000000D 4152                            push r10
+    45 0000000F 4153                            push r11
+    46 00000011 4154                            push r12
+    47 00000013 4155                            push r13
+    48 00000015 4156                            push r14
+    49 00000017 4157                            push r15
+    50 00000019 9C                              pushf
+    51                                  
+    52 0000001A B800000000                      mov rax, 0
+    53 0000001F 48BF-                           mov rdi, program_overview
+    53 00000021 [0000000000000000] 
+    54 00000029 E8(00000000)                    call printf
+    55                                  
+    56 0000002E B800000000                      mov rax, 0
+    57 00000033 48BF-                           mov rdi, first_prompt
+    57 00000035 [2F00000000000000] 
+    58 0000003D E8(00000000)                    call printf
+    59                                      
+    60                                      ;User input is array
+    61 00000042 B800000000                      mov qword rax, 0
+    62 00000047 48BF-                           mov qword rdi, array
+    62 00000049 [0000000000000000] 
+    63 00000051 48BE-                           mov qword rsi, array_size
+    63 00000053 [2003000000000000] 
+    64 0000005B E8(00000000)                    call Input_array
+    65 00000060 4989C5                          mov r13, rax
+    66                                  
+    67                                      ;Prints the message for the numbers in the array.
+    68 00000063 B800000000                      mov rax, 0
+    69 00000068 48BF-                           mov rdi, array_message
+    69 0000006A [C100000000000000] 
+    70 00000072 E8(00000000)                    call printf
+    71                                      
+    72                                      ;Calls the Output_array file to print the numbers in the array
+    73 00000077 B800000000                      mov qword rax, 0
+    74 0000007C 48BF-                           mov qword rdi, array
+    74 0000007E [0000000000000000] 
+    75 00000086 4C89EE                          mov qword rsi, r13
+    76 00000089 E8(00000000)                    call Output_array
+    77                                  
+    78                                      ;Sends the array information to Sum file to calculate the sum of the array.
+    79 0000008E B800000000                      mov qword rax, 0
+    80 00000093 48BF-                           mov qword rdi, array
+    80 00000095 [0000000000000000] 
+    81 0000009D 4C89EE                          mov qword rsi, r13
+    82 000000A0 E8(00000000)                    call hmean
+    83 000000A5 F2440F10E8                      movsd xmm13, xmm0
+    84                                  
+    85                                      ;Prints the message stating the number of elements in the array and the sum.
+    86 000000AA B801000000                      mov rax, 1
+    87 000000AF 48BF-                           mov rdi, array_sum_message
+    87 000000B1 [F900000000000000] 
+    88 000000B9 F2410F10C5                      movsd xmm0, xmm13
+    89 000000BE E8(00000000)                    call printf
+    90                                  
+    91                                      ;Prints the sorted array text
+    92 000000C3 B800000000                      mov rax, 0
+    93 000000C8 48BF-                           mov rdi, sorted_array
+    93 000000CA [3201000000000000] 
+    94 000000D2 E8(00000000)                    call printf
+    95                                  
+    96                                      ;Sends the array to the Sort function to sort the array
+    97 000000D7 B800000000                      mov rax, 0
+    98 000000DC 48BF-                           mov rdi, array
+    98 000000DE [0000000000000000] 
+    99 000000E6 4C89EE                          mov rsi, r13
+   100 000000E9 E8(00000000)                    call Sort
+   101                                      
+   102                                      ;Sends the Sorted array to the Output_array file to print the sorted array
+   103 000000EE B800000000                      mov rax, 0
+   104 000000F3 48BF-                           mov rdi, array
+   104 000000F5 [0000000000000000] 
+   105 000000FD 4C89EE                          mov rsi, r13
+   106 00000100 E8(00000000)                    call Output_array
+   107                                  
+   108                                      ;Prints the message stating that the file is done running
+   109 00000105 B800000000                      mov rax, 0
+   110 0000010A 48BF-                           mov rdi, completed
+   110 0000010C [4D01000000000000] 
+   111 00000114 E8(00000000)                    call printf
+   112                                      
+   113 00000119 B801000000                      mov rax, 1
+   114 0000011E F2410F10C5                      movsd xmm0, xmm13
+   115                                      ;Restores the stack
+   116 00000123 9D                              popf
+   117 00000124 415F                            pop r15
+   118 00000126 415E                            pop r14
+   119 00000128 415D                            pop r13
+   120 0000012A 415C                            pop r12
+   121 0000012C 415B                            pop r11
+   122 0000012E 415A                            pop r10
+   123 00000130 4159                            pop r9
+   124 00000132 4158                            pop r8
+   125 00000134 5E                              pop rsi
+   126 00000135 5F                              pop rdi
+   127 00000136 5A                              pop rdx
+   128 00000137 59                              pop rcx
+   129 00000138 5B                              pop rbx
+   130 00000139 5D                              pop rbp
+   131 0000013A C3                              ret

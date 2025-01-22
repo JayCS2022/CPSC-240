@@ -1,0 +1,67 @@
+     1                                  extern printf
+     2                                  global Output_array
+     3                                  
+     4                                  
+     5                                  segment .data
+     6 00000000 256C66202000                floatform db "%lf  ", 0
+     7                                  
+     8                                  segment .bss
+     9                                  
+    10                                  segment .text
+    11                                  Output_array:
+    12 00000000 55                          push rbp                                          ;Backup rbp
+    13 00000001 4889E5                      mov  rbp,rsp                                      ;The base pointer now points to top of stack
+    14 00000004 57                          push rdi                                          ;Backup rdi
+    15 00000005 56                          push rsi                                          ;Backup rsi
+    16 00000006 52                          push rdx                                          ;Backup rdx
+    17 00000007 51                          push rcx                                          ;Backup rcx
+    18 00000008 4150                        push r8                                           ;Backup r8
+    19 0000000A 4151                        push r9                                           ;Backup r9
+    20 0000000C 4152                        push r10                                          ;Backup r10
+    21 0000000E 4153                        push r11                                          ;Backup r11
+    22 00000010 4154                        push r12                                          ;Backup r12
+    23 00000012 4155                        push r13                                          ;Backup r13
+    24 00000014 4156                        push r14                                          ;Backup r14
+    25 00000016 4157                        push r15                                          ;Backup r15
+    26 00000018 53                          push rbx                                          ;Backup rbx
+    27 00000019 9C                          pushf                                             ;Backup rflags
+    28                                  
+    29                                      ;Sets the counter to zero
+    30 0000001A 4D31FF                      xor r15, r15
+    31                                      ;Saves the array and size in the registers
+    32 0000001D 4989FC                      mov r12, rdi
+    33 00000020 4989F5                      mov r13, rsi
+    34                                  
+    35                                      ;Increments and prints the elements of the array until the full array has been printed
+    36                                      begin_loop:
+    37 00000023 4D39EF                      cmp r15, r13
+    38 00000026 7D1F                        jge done
+    39 00000028 B801000000                  mov rax, 1
+    40 0000002D 48BF-                       mov rdi, floatform
+    40 0000002F [0000000000000000] 
+    41 00000037 F2430F1004FC                movsd xmm0,  [r12 + r15 * 8]
+    42 0000003D E8(00000000)                call printf
+    43                                  
+    44 00000042 49FFC7                      inc r15
+    45 00000045 EBDC                        jmp begin_loop
+    46                                      
+    47                                      ;Completes running the file
+    48                                      done:
+    49                                  
+    50 00000047 9D                          popf                                    ;Restore rflags
+    51 00000048 5B                          pop rbx                                 ;Restore rbx
+    52 00000049 415F                        pop r15                                 ;Restore r15
+    53 0000004B 415E                        pop r14                                 ;Restore r14
+    54 0000004D 415D                        pop r13                                 ;Restore r13
+    55 0000004F 415C                        pop r12                                 ;Restore r12
+    56 00000051 415B                        pop r11                                 ;Restore r11
+    57 00000053 415A                        pop r10                                 ;Restore r10
+    58 00000055 4159                        pop r9                                  ;Restore r9
+    59 00000057 4158                        pop r8                                  ;Restore r8
+    60 00000059 59                          pop rcx                                 ;Restore rcx
+    61 0000005A 5A                          pop rdx                                 ;Restore rdx
+    62 0000005B 5E                          pop rsi                                 ;Restore rsi
+    63 0000005C 5F                          pop rdi                                 ;Restore rdi
+    64 0000005D 5D                          pop rbp                                 ;Restore rbp
+    65                                  
+    66 0000005E C3                          ret                                     ;Pop the integer stack and jump to the address equal to the popped value.

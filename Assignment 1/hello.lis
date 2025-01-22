@@ -1,0 +1,252 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "X86 Assembly Programming".                                                                                  *
+     3                                  ;shite space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: String I/O 1.5
+    20                                  ;  Programming languages X86 with one module in C++
+    21                                  ;Purpose
+    22                                  ;  This program will serve to introduce X86 programming to new programmers.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: welcome.cpp, hello.asm, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l hello.lis -o hello.o hello.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  extern fgets
+    35                                  extern printf
+    36                                  extern scanf
+    37                                  extern stdin
+    38                                  extern strlen
+    39                                  global hello
+    40                                  
+    41                                  null equ 0
+    42                                  
+    43                                  segment .data
+    44 00000000 506C6561736520656E-         instruction db "Please enter your first and last names: ", 0
+    44 00000009 74657220796F757220-
+    44 00000012 666972737420616E64-
+    44 0000001B 206C617374206E616D-
+    44 00000024 65733A2000         
+    45 00000029 257300                      stringform db "%s", 0
+    46 0000002C 506C6561736520656E-         title db "Please enter your title (Ms, Mr, Engineer, Programmer, Mathematician, Genius, etc): ", 0
+    46 00000035 74657220796F757220-
+    46 0000003E 7469746C6520284D73-
+    46 00000047 2C204D722C20456E67-
+    46 00000050 696E6565722C205072-
+    46 00000059 6F6772616D6D65722C-
+    46 00000062 204D617468656D6174-
+    46 0000006B 696369616E2C204765-
+    46 00000074 6E6975732C20657463-
+    46 0000007D 293A2000           
+    47 00000081 257300                      title_stringform db "%s", 0
+    48 00000084 48656C6C6F20257320-         day_hello db "Hello %s ", 0
+    48 0000008D 00                 
+    49 0000008E 25732E20486F772068-         day db "%s. How has your day been so far? ", 0
+    49 00000097 617320796F75722064-
+    49 000000A0 6179206265656E2073-
+    49 000000A9 6F206661723F2000   
+    50 000000B1 257320697320726561-         nice db "%s is really nice.", 10, 0
+    50 000000BA 6C6C79206E6963652E-
+    50 000000C3 0A00               
+    51 000000C5 576861742069732079-         salary db "What is your salary in dollars: ", 0
+    51 000000CE 6F75722073616C6172-
+    51 000000D7 7920696E20646F6C6C-
+    51 000000E0 6172733A2000       
+    52 000000E6 256C6600                    floatform db "%lf", 0
+    53 000000EA 4F682C202425392E32-         nice_salary db "Oh, $%9.2lf is very nice too for a %s.",10, 0
+    53 000000F3 6C6620697320766572-
+    53 000000FC 79206E69636520746F-
+    53 00000105 6F20666F7220612025-
+    53 0000010E 732E0A00           
+    54 00000112 5468697320636F6E63-         complete_program db "This concludes the demonstration of the Hello program written in x86 assembly.",10, 0
+    54 0000011B 6C7564657320746865-
+    54 00000124 2064656D6F6E737472-
+    54 0000012D 6174696F6E206F6620-
+    54 00000136 7468652048656C6C6F-
+    54 0000013F 2070726F6772616D20-
+    54 00000148 7772697474656E2069-
+    54 00000151 6E2078383620617373-
+    54 0000015A 656D626C792E0A00   
+    55                                  
+    56                                  
+    57                                  segment .bss
+    58 00000000 <res 32h>                   username resb 50
+    59 00000032 <res 28h>                   user_title resb 40
+    60 0000005A <res 64h>                   user_day resb 100
+    61 000000BE <res 32h>                   day_status resb 50
+    62 000000F0 <res 32h>                   done_program resb 50
+    63                                  
+    64                                  segment .text
+    65                                      hello:
+    66 00000000 55                              push rbp
+    67 00000001 4889E5                          mov rbp, rsp
+    68 00000004 53                              push rbx
+    69 00000005 51                              push rcx
+    70 00000006 52                              push rdx
+    71 00000007 57                              push rdi
+    72 00000008 56                              push rsi
+    73 00000009 4150                            push r8
+    74 0000000B 4151                            push r9
+    75 0000000D 4152                            push r10
+    76 0000000F 4153                            push r11
+    77 00000011 4154                            push r12
+    78 00000013 4155                            push r13
+    79 00000015 4156                            push r14
+    80 00000017 4157                            push r15
+    81 00000019 9C                              pushf
+    82                                  
+    83                                      ;Shows message prompting the user to input name
+    84 0000001A B800000000                      mov qword rax, 0
+    85 0000001F 48BF-                           mov rdi, stringform
+    85 00000021 [2900000000000000] 
+    86 00000029 48BE-                           mov rsi, instruction
+    86 0000002B [0000000000000000] 
+    87 00000033 E8(00000000)                    call printf
+    88                                  
+    89                                      ;Takes the user input and stores that data
+    90 00000038 B800000000                      mov rax, 0
+    91 0000003D 48BF-                           mov rdi, username
+    91 0000003F [0000000000000000] 
+    92 00000047 BE32000000                      mov rsi, 50
+    93 0000004C 488B1425[00000000]              mov rdx, [stdin]
+    94 00000054 E8(00000000)                    call fgets
+    95                                      
+    96                                      ;Shows message prompting the user to input title
+    97 00000059 B800000000                      mov rax, 0
+    98 0000005E 48BF-                           mov rdi, title_stringform
+    98 00000060 [8100000000000000] 
+    99 00000068 48BE-                           mov rsi, title
+    99 0000006A [2C00000000000000] 
+   100 00000072 E8(00000000)                    call printf
+   101                                  
+   102                                      ;Takes the user input and stores that data
+   103 00000077 B800000000                      mov rax, 0
+   104 0000007C 48BF-                           mov rdi, user_title
+   104 0000007E [3200000000000000] 
+   105 00000086 BE32000000                      mov rsi, 50
+   106 0000008B 488B1425[00000000]              mov rdx, [stdin]
+   107 00000093 E8(00000000)                    call fgets
+   108                                          
+   109                                      ;Remove newline for formatting output message
+   110 00000098 B800000000                      mov rax, 0
+   111 0000009D 48BF-                           mov rdi, user_title
+   111 0000009F [3200000000000000] 
+   112 000000A7 E8(00000000)                    call strlen
+   113 000000AC C680[31000000]00                mov [user_title+rax-1], byte 0
+   114                                  
+   115 000000B3 B800000000                      mov rax, 0
+   116 000000B8 48BF-                           mov rdi, username
+   116 000000BA [0000000000000000] 
+   117 000000C2 E8(00000000)                    call strlen
+   118 000000C7 C680[FFFFFFFF]00                mov [username+rax-1], byte 0
+   119                                  
+   120                                      ;Outputs the message for user name and title and also asks for how the day was
+   121 000000CE B800000000                      mov rax, 0
+   122 000000D3 48BF-                           mov rdi, day_hello
+   122 000000D5 [8400000000000000] 
+   123 000000DD 48BE-                           mov rsi, user_title
+   123 000000DF [3200000000000000] 
+   124 000000E7 E8(00000000)                    call printf
+   125 000000EC 48BF-                           mov rdi, day
+   125 000000EE [8E00000000000000] 
+   126 000000F6 48BE-                           mov rsi, username
+   126 000000F8 [0000000000000000] 
+   127 00000100 E8(00000000)                    call printf
+   128                                      
+   129                                      ;Takes the user input and stores that data
+   130 00000105 B800000000                      mov rax, 0
+   131 0000010A 48BF-                           mov rdi, user_day
+   131 0000010C [5A00000000000000] 
+   132 00000114 BE30000000                      mov rsi, 48
+   133 00000119 488B1425[00000000]              mov rdx, [stdin]
+   134 00000121 E8(00000000)                    call fgets
+   135                                  
+   136                                      ;Remove newline for formatting output message
+   137 00000126 B800000000                      mov rax, 0
+   138 0000012B 48BF-                           mov rdi, user_day
+   138 0000012D [5A00000000000000] 
+   139 00000135 E8(00000000)                    call strlen
+   140 0000013A C680[59000000]00                mov [user_day+rax-1], byte 0
+   141                                      
+   142                                      ;Output day status
+   143 00000141 B800000000                      mov rax, 0
+   144 00000146 48BF-                           mov rdi, nice
+   144 00000148 [B100000000000000] 
+   145 00000150 48BE-                           mov rsi, user_day
+   145 00000152 [5A00000000000000] 
+   146 0000015A E8(00000000)                    call printf
+   147                                      
+   148                                      ;Shows message prompting the user to input salary
+   149 0000015F B800000000                      mov rax, 0
+   150 00000164 48BF-                           mov rdi, salary
+   150 00000166 [C500000000000000] 
+   151 0000016E 48BE-                           mov rsi, floatform
+   151 00000170 [E600000000000000] 
+   152 00000178 E8(00000000)                    call printf
+   153                                  
+   154                                      ;Takes the user input for the salary and stores that data
+   155 0000017D B800000000                      mov rax, 0
+   156 00000182 48BF-                           mov rdi, floatform
+   156 00000184 [E600000000000000] 
+   157 0000018C 4889E6                          mov rsi, rsp
+   158 0000018F E8(00000000)                    call scanf
+   159 00000194 F2440F101424                    movsd xmm10, [rsp]
+   160                                  
+   161                                      ;Output salary status
+   162 0000019A B801000000                      mov rax, 1
+   163 0000019F 48BF-                           mov rdi, nice_salary
+   163 000001A1 [EA00000000000000] 
+   164 000001A9 48BE-                           mov rsi, user_title
+   164 000001AB [3200000000000000] 
+   165 000001B3 F2410F10C2                      movsd xmm0, xmm10
+   166 000001B8 E8(00000000)                    call printf
+   167                                  
+   168                                      ;Shows message for x86 hello program complete
+   169 000001BD B800000000                      mov rax, 0
+   170 000001C2 48BF-                           mov rdi, complete_program
+   170 000001C4 [1201000000000000] 
+   171 000001CC 48BE-                           mov rsi, done_program
+   171 000001CE [F000000000000000] 
+   172 000001D6 E8(00000000)                    call printf
+   173                                  
+   174                                      ;Sends the user name string data to welcome.cpp
+   175 000001DB 48B8-                           mov rax, username
+   175 000001DD [0000000000000000] 
+   176 000001E5 F20F100424                      movsd xmm0, [rsp]
+   177                                  
+   178                                      ;Restores the stack
+   179 000001EA 9D                              popf
+   180 000001EB 415F                            pop r15
+   181 000001ED 415E                            pop r14
+   182 000001EF 415D                            pop r13
+   183 000001F1 415C                            pop r12
+   184 000001F3 415B                            pop r11
+   185 000001F5 415A                            pop r10
+   186 000001F7 4159                            pop r9
+   187 000001F9 4158                            pop r8
+   188 000001FB 5E                              pop rsi
+   189 000001FC 5F                              pop rdi
+   190 000001FD 5A                              pop rdx
+   191 000001FE 59                              pop rcx
+   192 000001FF 5B                              pop rbx
+   193 00000200 5D                              pop rbp
+   194 00000201 C3                              ret

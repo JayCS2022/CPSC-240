@@ -1,0 +1,100 @@
+     1                                  extern scanf
+     2                                  extern printf
+     3                                  extern stdin
+     4                                  extern isfloat
+     5                                  extern fgets
+     6                                  extern strlen
+     7                                  global Input_array
+     8                                  null equ 0
+     9                                  
+    10                                  segment .data
+    11 00000000 256C66202000                floatform db "%lf  ", 0
+    12 00000006 416E206572726F7220-         invalid_message db "An error was detected. Re-enter the number", 10, 0
+    12 0000000F 776173206465746563-
+    12 00000018 7465642E2052652D65-
+    12 00000021 6E7465722074686520-
+    12 0000002A 6E756D6265720A00   
+    13                                  
+    14                                  segment .bss
+    15                                  
+    16                                  segment .text
+    17                                  Input_array:
+    18 00000000 55                              push rbp
+    19 00000001 4889E5                          mov rbp, rsp
+    20 00000004 53                              push rbx
+    21 00000005 51                              push rcx
+    22 00000006 52                              push rdx
+    23 00000007 57                              push rdi
+    24 00000008 56                              push rsi
+    25 00000009 4150                            push r8
+    26 0000000B 4151                            push r9
+    27 0000000D 4152                            push r10
+    28 0000000F 4153                            push r11
+    29 00000011 4154                            push r12
+    30 00000013 4155                            push r13
+    31 00000015 4156                            push r14
+    32 00000017 4157                            push r15
+    33 00000019 9C                              pushf
+    34                                      
+    35                                      ;Saves the array and size in the registers
+    36 0000001A 4989FE                      mov r14, rdi
+    37 0000001D 4989F7                      mov r15, rsi
+    38                                      ;Sets the counter to zero
+    39 00000020 4D31ED                      xor r13, r13
+    40                                      ;Creates sotrage space for array
+    41 00000023 4881EC40010000              sub rsp, 320
+    42                                  
+    43                                      ;Takes the user input
+    44                                      Start_code:
+    45                                          ;Prompts the user for input
+    46 0000002A B800000000                      mov rax, 0
+    47 0000002F 48BF-                           mov rdi, floatform
+    47 00000031 [0000000000000000] 
+    48 00000039 4889E6                          mov rsi, rsp
+    49 0000003C E8(00000000)                    call scanf
+    50 00000041 4898                            cdqe
+    51 00000043 4883F8FF                            cmp rax, -1
+    52 00000047 7437                                je finish
+    53                                          ;Checks if the input is an integer otherwise prints invalid input message
+    54 00000049 B800000000                      mov rax, 0
+    55 0000004E 4889E7                          mov rdi, rsp
+    56 00000051 E8(00000000)                    call isfloat
+    57 00000056 4883F8FF                        cmp rax, -1
+    58 0000005A 740E                            je Invalid_input
+    59 0000005C 4B8904EE                        mov [r14+8*r13], rax
+    60                                  
+    61                                          ;Increments until the user has reached the max size
+    62 00000060 49FFC5                          inc r13
+    63 00000063 4D39FD                          cmp r13, r15
+    64 00000066 7CC2                            jl Start_code
+    65 00000068 EB16                            jmp finish
+    66                                  
+    67                                      ;Prints the invalid input message
+    68                                      Invalid_input:
+    69 0000006A B800000000                      mov rax, 0
+    70 0000006F 48BF-                           mov rdi, invalid_message
+    70 00000071 [0600000000000000] 
+    71 00000079 E8(00000000)                    call printf
+    72 0000007E EBAA                            jmp Start_code
+    73                                      
+    74                                      ;Completes running the file
+    75                                      finish:
+    76 00000080 4C89E8                          mov rax, r13
+    77 00000083 4881C440010000                  add rsp, 320
+    78                                  
+    79 0000008A 9D                              popf
+    80 0000008B 415F                            pop r15
+    81 0000008D 415E                            pop r14
+    82 0000008F 415D                            pop r13
+    83 00000091 415C                            pop r12
+    84 00000093 415B                            pop r11
+    85 00000095 415A                            pop r10
+    86 00000097 4159                            pop r9
+    87 00000099 4158                            pop r8
+    88 0000009B 5E                              pop rsi
+    89 0000009C 5F                              pop rdi
+    90 0000009D 5A                              pop rdx
+    91 0000009E 59                              pop rcx
+    92 0000009F 5B                              pop rbx
+    93 000000A0 5D                              pop rbp
+    94 000000A1 C3                              ret

@@ -1,0 +1,71 @@
+     1                                  global hmean
+     2                                  
+     3                                  null equ 0
+     4                                  
+     5                                  segment .data
+     6 00000000 000000000000F03F            one dq 1.0
+     7                                  
+     8                                  segment .bss
+     9                                  
+    10                                  
+    11                                  segment .text
+    12                                      hmean:
+    13 00000000 55                              push rbp
+    14 00000001 4889E5                          mov  rbp,rsp
+    15 00000004 57                              push rdi
+    16 00000005 56                              push rsi
+    17 00000006 52                              push rdx
+    18 00000007 51                              push rcx
+    19 00000008 4150                            push r8
+    20 0000000A 4151                            push r9
+    21 0000000C 4152                            push r10
+    22 0000000E 4153                            push r11
+    23 00000010 4154                            push r12
+    24 00000012 4155                            push r13
+    25 00000014 4156                            push r14
+    26 00000016 4157                            push r15
+    27 00000018 53                              push rbx
+    28 00000019 9C                              pushf
+    29                                  
+    30 0000001A 4831C0                          xor rax, rax
+    31 0000001D 4D31F6                          xor r14, r14
+    32 00000020 4989FC                          mov r12, rdi
+    33 00000023 4989F5                          mov r13, rsi
+    34                                  
+    35 00000026 F2440F102C25-                   movsd xmm13, qword [one]
+    35 0000002C [00000000]         
+    36 00000030 66450FEFFF                      pxor xmm15, xmm15
+    37                                      ;Calculates the Sum of the array received
+    38                                      sumLoop:
+    39 00000035 4D39EE                          cmp r14, r13
+    40 00000038 7D15                            jge endLoop
+    41                                  
+    42 0000003A F2470F1034F4                    movsd xmm14, qword [r12 + r14 * 8]
+    43 00000040 F2450F5EEE                      divsd xmm13, xmm14
+    44 00000045 F2450F58FD                      addsd xmm15, xmm13
+    45 0000004A 49FFC6                          inc r14
+    46                                  
+    47 0000004D EBE6                            jmp sumLoop
+    48                                  
+    49                                      ;Sends the sum information to the Manager file
+    50                                      endLoop:
+    51 0000004F F2410F10C7                      movsd xmm0, xmm15
+    52                                  
+    53 00000054 9D                              popf                                    ;Restore rflags
+    54 00000055 5B                              pop rbx                                 ;Restore rbx
+    55 00000056 415F                            pop r15                                 ;Restore r15
+    56 00000058 415E                            pop r14                                 ;Restore r14
+    57 0000005A 415D                            pop r13                                 ;Restore r13
+    58 0000005C 415C                            pop r12                                 ;Restore r12
+    59 0000005E 415B                            pop r11                                 ;Restore r11
+    60 00000060 415A                            pop r10                                 ;Restore r10
+    61 00000062 4159                            pop r9                                  ;Restore r9
+    62 00000064 4158                            pop r8                                  ;Restore r8
+    63 00000066 59                              pop rcx                                 ;Restore rcx
+    64 00000067 5A                              pop rdx                                 ;Restore rdx
+    65 00000068 5E                              pop rsi                                 ;Restore rsi
+    66 00000069 5F                              pop rdi                                 ;Restore rdi
+    67 0000006A 5D                              pop rbp                                 ;Restore rbp
+    68                                  
+    69 0000006B C3                          ret
+    70 0000006C C3                              ret

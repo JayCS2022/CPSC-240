@@ -1,0 +1,100 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Arrays".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Arrays
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to store, calcualte the sum, sort, and print integer arrays from user input.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: Main.c, Manager.asm, Sum.asm, Output_array.asm, Input_array.asm, isinteger.asm, Sort.c, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l Output_array.lis -o Output_array.o Output_array.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  extern printf
+    35                                  global Output_array
+    36                                  
+    37                                  
+    38                                  segment .data
+    39 00000000 256C64202000                intform db "%ld  ", 0
+    40                                  
+    41                                  segment .bss
+    42                                  
+    43                                  segment .text
+    44                                  Output_array:
+    45 00000000 55                          push rbp                                          ;Backup rbp
+    46 00000001 4889E5                      mov  rbp,rsp                                      ;The base pointer now points to top of stack
+    47 00000004 57                          push rdi                                          ;Backup rdi
+    48 00000005 56                          push rsi                                          ;Backup rsi
+    49 00000006 52                          push rdx                                          ;Backup rdx
+    50 00000007 51                          push rcx                                          ;Backup rcx
+    51 00000008 4150                        push r8                                           ;Backup r8
+    52 0000000A 4151                        push r9                                           ;Backup r9
+    53 0000000C 4152                        push r10                                          ;Backup r10
+    54 0000000E 4153                        push r11                                          ;Backup r11
+    55 00000010 4154                        push r12                                          ;Backup r12
+    56 00000012 4155                        push r13                                          ;Backup r13
+    57 00000014 4156                        push r14                                          ;Backup r14
+    58 00000016 4157                        push r15                                          ;Backup r15
+    59 00000018 53                          push rbx                                          ;Backup rbx
+    60 00000019 9C                          pushf                                             ;Backup rflags
+    61                                  
+    62                                      ;Sets the counter to zero
+    63 0000001A 4D31FF                      xor r15, r15
+    64                                      ;Saves the array and size in the registers
+    65 0000001D 4989FC                      mov r12, rdi
+    66 00000020 4989F5                      mov r13, rsi
+    67                                  
+    68                                      ;Increments and prints the elements of the array until the full array has been printed
+    69                                      begin_loop:
+    70 00000023 4D39EF                      cmp r15, r13
+    71 00000026 7D1D                        jge done
+    72 00000028 B800000000                  mov rax, 0
+    73 0000002D 48BF-                       mov rdi, intform
+    73 0000002F [0000000000000000] 
+    74 00000037 4B8B34FC                    mov rsi, [r12 + 8 * r15]
+    75 0000003B E8(00000000)                call printf
+    76                                  
+    77 00000040 49FFC7                      inc r15
+    78 00000043 EBDE                        jmp begin_loop
+    79                                      
+    80                                      ;Completes running the file
+    81                                      done:
+    82                                  
+    83 00000045 9D                          popf                                    ;Restore rflags
+    84 00000046 5B                          pop rbx                                 ;Restore rbx
+    85 00000047 415F                        pop r15                                 ;Restore r15
+    86 00000049 415E                        pop r14                                 ;Restore r14
+    87 0000004B 415D                        pop r13                                 ;Restore r13
+    88 0000004D 415C                        pop r12                                 ;Restore r12
+    89 0000004F 415B                        pop r11                                 ;Restore r11
+    90 00000051 415A                        pop r10                                 ;Restore r10
+    91 00000053 4159                        pop r9                                  ;Restore r9
+    92 00000055 4158                        pop r8                                  ;Restore r8
+    93 00000057 59                          pop rcx                                 ;Restore rcx
+    94 00000058 5A                          pop rdx                                 ;Restore rdx
+    95 00000059 5E                          pop rsi                                 ;Restore rsi
+    96 0000005A 5F                          pop rdi                                 ;Restore rdi
+    97 0000005B 5D                          pop rbp                                 ;Restore rbp
+    98                                  
+    99 0000005C C3                          ret                                     ;Pop the integer stack and jump to the address equal to the popped value.

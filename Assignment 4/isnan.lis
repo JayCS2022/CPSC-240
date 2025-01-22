@@ -1,0 +1,88 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Non-deterministic Random Numbers".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Non-deterministic Random Numbers
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to create numbers, normalize the numbers the program created, sort the numbers, and print the numbers.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: main.c, execute.asm, fill_random_array.asm, normalize_array.asm, show_array.asm, isnan.asm, sort.c, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l isnan.lis -o isnan.o isnan.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  global isnan
+    35                                  
+    36                                  segment .data
+    37                                  
+    38                                  segment .bss
+    39                                  
+    40                                  segment .text
+    41                                      isnan:
+    42 00000000 55                              push rbp
+    43 00000001 4889E5                          mov rbp, rsp
+    44 00000004 53                              push rbx
+    45 00000005 51                              push rcx
+    46 00000006 52                              push rdx
+    47 00000007 57                              push rdi
+    48 00000008 56                              push rsi
+    49 00000009 4150                            push r8
+    50 0000000B 4151                            push r9
+    51 0000000D 4152                            push r10
+    52 0000000F 4153                            push r11
+    53 00000011 4154                            push r12
+    54 00000013 4155                            push r13
+    55 00000015 4156                            push r14
+    56 00000017 4157                            push r15
+    57 00000019 9C                              pushf
+    58                                  
+    59 0000001A F2440F10F8                      movsd xmm15, xmm0
+    60                                  
+    61                                          ;This code checks if the number is a nan and the if the number is not a nan returns a 1
+    62 0000001F 66450F2EFF                      ucomisd xmm15, xmm15
+    63 00000024 7A07                            jp nan
+    64 00000026 B801000000                      mov rax, 1
+    65 0000002B EB05                            jmp exit
+    66                                  
+    67                                          ;This code returns a 0 if the number is a nan
+    68                                          nan:
+    69 0000002D B800000000                      mov rax, 0
+    70                                  
+    71                                          ;Completes the execution of the file
+    72                                          exit:
+    73 00000032 9D                                  popf
+    74 00000033 415F                                pop r15
+    75 00000035 415E                                pop r14
+    76 00000037 415D                                pop r13
+    77 00000039 415C                                pop r12
+    78 0000003B 415B                                pop r11
+    79 0000003D 415A                                pop r10
+    80 0000003F 4159                                pop r9
+    81 00000041 4158                                pop r8
+    82 00000043 5E                                  pop rsi
+    83 00000044 5F                                  pop rdi
+    84 00000045 5A                                  pop rdx
+    85 00000046 59                                  pop rcx
+    86 00000047 5B                                  pop rbx
+    87 00000048 5D                                  pop rbp
+    88 00000049 C3                                  ret

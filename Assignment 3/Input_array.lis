@@ -1,0 +1,146 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Arrays".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Arrays
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to store, calcualte the sum, sort, and print integer arrays from user input.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: Main.c, Manager.asm, Sum.asm, Output_array.asm, Input_array.asm, isinteger.asm, Sort.c, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l Input_array.lis -o Input_array.o Input_array.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  extern scanf
+    35                                  extern printf
+    36                                  extern stdin
+    37                                  extern isinteger
+    38                                  extern atol
+    39                                  extern fgets
+    40                                  extern strlen
+    41                                  global Input_array
+    42                                  null equ 0
+    43                                  
+    44                                  segment .data
+    45 00000000 256C6400                    intform db "%ld", 0
+    46 00000004 416E206572726F7220-         invalid_message db "An error was detected. Re-enter the number", 10, 0
+    46 0000000D 776173206465746563-
+    46 00000016 7465642E2052652D65-
+    46 0000001F 6E7465722074686520-
+    46 00000028 6E756D6265720A00   
+    47                                  
+    48                                  segment .bss
+    49                                  
+    50                                  segment .text
+    51                                  Input_array:
+    52 00000000 55                              push rbp
+    53 00000001 4889E5                          mov rbp, rsp
+    54 00000004 53                              push rbx
+    55 00000005 51                              push rcx
+    56 00000006 52                              push rdx
+    57 00000007 57                              push rdi
+    58 00000008 56                              push rsi
+    59 00000009 4150                            push r8
+    60 0000000B 4151                            push r9
+    61 0000000D 4152                            push r10
+    62 0000000F 4153                            push r11
+    63 00000011 4154                            push r12
+    64 00000013 4155                            push r13
+    65 00000015 4156                            push r14
+    66 00000017 4157                            push r15
+    67 00000019 9C                              pushf
+    68                                      
+    69                                      ;Saves the array and size in the registers
+    70 0000001A 4989FE                      mov r14, rdi
+    71 0000001D 4989F7                      mov r15, rsi
+    72                                      ;Sets the counter to zero
+    73 00000020 4D31ED                      xor r13, r13
+    74                                      ;Creates sotrage space for array
+    75 00000023 4881EC40010000              sub rsp, 320
+    76                                  
+    77                                      ;Takes the user input
+    78                                      Start_code:
+    79                                          ;Prompts the user for input
+    80 0000002A B800000000                      mov rax, 0
+    81 0000002F 4889E7                          mov rdi, rsp
+    82 00000032 BE3F010000                      mov rsi, 319
+    83 00000037 488B1425[00000000]              mov rdx, [stdin]                    
+    84 0000003F E8(00000000)                    call fgets
+    85 00000044 4898                            cdqe
+    86 00000046 83F800                              cmp eax, 0
+    87 00000049 7456                                je finish
+    88                                  
+    89                                          ;Removes white space
+    90 0000004B B800000000                      mov rax, 0
+    91 00000050 4889E7                          mov rdi, rsp
+    92 00000053 E8(00000000)                    call strlen
+    93 00000058 C64404FF00                      mov byte rsp[rax-1], byte 0
+    94                                  
+    95                                          ;Checks if the input is an integer otherwise prints invalid input message
+    96 0000005D B800000000                      mov rax, 0
+    97 00000062 4889E7                          mov rdi, rsp
+    98 00000065 E8(00000000)                    call isinteger
+    99 0000006A 4883F8FF                        cmp rax, -1
+   100 0000006E 741B                            je Invalid_input
+   101                                  
+   102                                          ;Converts string to integer
+   103 00000070 B800000000                      mov rax, 0
+   104 00000075 4889E7                          mov rdi, rsp
+   105 00000078 E8(00000000)                    call atol
+   106 0000007D 4B8904EE                        mov [r14+8*r13], rax
+   107                                  
+   108                                          ;Increments until the user has reached the max size
+   109 00000081 49FFC5                          inc r13
+   110 00000084 4D39FD                          cmp r13, r15
+   111 00000087 7CA1                            jl Start_code
+   112 00000089 EB16                            jmp finish
+   113                                  
+   114                                      ;Prints the invalid input message
+   115                                      Invalid_input:
+   116 0000008B B800000000                      mov rax, 0
+   117 00000090 48BF-                           mov rdi, invalid_message
+   117 00000092 [0400000000000000] 
+   118 0000009A E8(00000000)                    call printf
+   119 0000009F EB89                            jmp Start_code
+   120                                      
+   121                                      ;Completes running the file
+   122                                      finish:
+   123 000000A1 4C89E8                          mov rax, r13
+   124 000000A4 4881C440010000                  add rsp, 320
+   125                                  
+   126 000000AB 9D                              popf
+   127 000000AC 415F                            pop r15
+   128 000000AE 415E                            pop r14
+   129 000000B0 415D                            pop r13
+   130 000000B2 415C                            pop r12
+   131 000000B4 415B                            pop r11
+   132 000000B6 415A                            pop r10
+   133 000000B8 4159                            pop r9
+   134 000000BA 4158                            pop r8
+   135 000000BC 5E                              pop rsi
+   136 000000BD 5F                              pop rdi
+   137 000000BE 5A                              pop rdx
+   138 000000BF 59                              pop rcx
+   139 000000C0 5B                              pop rbx
+   140 000000C1 5D                              pop rbp
+   141 000000C2 C3                              ret

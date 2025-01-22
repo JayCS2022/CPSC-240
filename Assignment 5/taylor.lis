@@ -1,0 +1,98 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Execution Speed".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Execution Speed
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to calculate the value of e^x.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: main.c, series.asm, taylor.asm, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l taylor.lis -o taylor.o taylor.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  global taylor
+    35                                  
+    36                                  segment .data
+    37                                      
+    38                                  segment .bss
+    39                                  
+    40                                  segment .text
+    41                                      taylor:
+    42 00000000 55                              push rbp
+    43 00000001 4889E5                          mov rbp, rsp
+    44 00000004 53                              push rbx
+    45 00000005 51                              push rcx
+    46 00000006 52                              push rdx
+    47 00000007 57                              push rdi
+    48 00000008 56                              push rsi
+    49 00000009 4150                            push r8
+    50 0000000B 4151                            push r9
+    51 0000000D 4152                            push r10
+    52 0000000F 4153                            push r11
+    53 00000011 4154                            push r12
+    54 00000013 4155                            push r13
+    55 00000015 4156                            push r14
+    56 00000017 4157                            push r15
+    57 00000019 9C                              pushf
+    58                                  
+    59                                      ;Receives the user input numbers
+    60 0000001A 664C0F6EFF                  movq xmm15, rdi
+    61 0000001F 664C0F6EEE                  movq xmm13, rsi
+    62 00000024 B801000000                  mov rax, 1
+    63 00000029 F24C0F2AE8                  cvtsi2sd xmm13, rax
+    64 0000002E F2450F10E5                  movsd xmm12, xmm13
+    65 00000033 41BC01000000                mov r12, 1
+    66                                  
+    67                                      ;Calculates the value of e^x
+    68                                      Start_code:
+    69 00000039 4D39EC                          cmp r12, r13
+    70 0000003C 7D19                            jge finish
+    71 0000003E 49FFC4                          inc r12
+    72 00000041 F24D0F2AEC                      cvtsi2sd xmm13, r12
+    73 00000046 F2450F59E7                      mulsd xmm12, xmm15
+    74 0000004B F2450F5EE5                      divsd xmm12, xmm13
+    75 00000050 F2450F58F4                      addsd xmm14, xmm12
+    76 00000055 EBE2                            jmp Start_code
+    77                                  
+    78                                      ;Sends the e^x value that was calcualted to the series.asm file
+    79                                      finish:
+    80 00000057 B801000000                      mov rax, 1
+    81 0000005C F2410F10C6                      movsd xmm0, xmm14
+    82                                  
+    83 00000061 9D                              popf
+    84 00000062 415F                            pop r15
+    85 00000064 415E                            pop r14
+    86 00000066 415D                            pop r13
+    87 00000068 415C                            pop r12
+    88 0000006A 415B                            pop r11
+    89 0000006C 415A                            pop r10
+    90 0000006E 4159                            pop r9
+    91 00000070 4158                            pop r8
+    92 00000072 5E                              pop rsi
+    93 00000073 5F                              pop rdi
+    94 00000074 5A                              pop rdx
+    95 00000075 59                              pop rcx
+    96 00000076 5B                              pop rbx
+    97 00000077 5D                              pop rbp
+    98 00000078 C3                              ret

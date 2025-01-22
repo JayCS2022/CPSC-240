@@ -1,0 +1,120 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Non-deterministic Random Numbers".                                                                                  *
+     3                                  ;white space.  Copyright (C) 2024  Jay Parmar                                                                               *
+     4                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
+     5                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     6                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
+     7                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     8                                  ;A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+     9                                  ;****************************************************************************************************************************
+    10                                  
+    11                                  
+    12                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3=========4=========5=========6=========7**
+    13                                  ;Author information
+    14                                  ;  Author name: Jay Parmar
+    15                                  ;  Programmer CWID: 885463034
+    16                                  ;  Author email: Jay-04.CS@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ; Program name: Non-deterministic Random Numbers
+    20                                  ;  Programming languages X86 with two modules in C
+    21                                  ;Purpose
+    22                                  ;  This program will serve to create numbers, normalize the numbers the program created, sort the numbers, and print the numbers.
+    23                                  ;
+    24                                  ;Project information
+    25                                  ;  Files: main.c, execute.asm, fill_random_array.asm, normalize_array.asm, show_array.asm, isnan.asm, sort.c, r.sh
+    26                                  ;  Status: The program has been tested extensively with no detectable errors.
+    27                                  ;
+    28                                  ;Translator information
+    29                                  ;  Linux: nasm -f elf64 -l show_array.lis -o show_array.o show_array.asm
+    30                                  ;
+    31                                  ;===== Begin code area ====================================================================================================================================================
+    32                                  
+    33                                  ;Declarations
+    34                                  extern printf
+    35                                  global show_array
+    36                                  
+    37                                  segment .data
+    38 00000000 494545453534090920-         header db "IEEE54		   Scientific Decimal", 10, 0
+    38 00000009 2020536369656E7469-
+    38 00000012 66696320446563696D-
+    38 0000001B 616C0A00           
+    39 0000001F 3078253031366C7820-         output_format dq "0x%016lx %18.13g", 10, 0
+    39 00000028 2531382E3133670A00-
+    39 00000031 000000000000000000-
+    39 0000003A 0000000000         
+    40 0000003F 0A00                        newline db "", 10, 0
+    41                                  
+    42                                  segment .bss
+    43                                      align 64
+    44 00000000 <res 340h>                  backup_storage_area resb 832
+    45                                  
+    46                                  segment .text
+    47                                      show_array:
+    48 00000000 55                              push rbp
+    49 00000001 4889E5                          mov rbp, rsp
+    50 00000004 53                              push rbx
+    51 00000005 51                              push rcx
+    52 00000006 52                              push rdx
+    53 00000007 57                              push rdi
+    54 00000008 56                              push rsi
+    55 00000009 4150                            push r8
+    56 0000000B 4151                            push r9
+    57 0000000D 4152                            push r10
+    58 0000000F 4153                            push r11
+    59 00000011 4154                            push r12
+    60 00000013 4155                            push r13
+    61 00000015 4156                            push r14
+    62 00000017 4157                            push r15
+    63 00000019 9C                              pushf
+    64                                  
+    65 0000001A 4989FF                          mov r15, rdi
+    66 0000001D 4989F6                          mov r14, rsi
+    67 00000020 41BD00000000                    mov r13, 0
+    68                                  
+    69                                          ;Prints the header to format the output
+    70 00000026 B800000000                      mov rax, 0
+    71 0000002B 48BF-                           mov rdi, header
+    71 0000002D [0000000000000000] 
+    72 00000035 E8(00000000)                    call printf
+    73                                  
+    74                                          ;This code block makes sure that the program outputs the amount of numbers in the array
+    75                                          array_size_code:
+    76 0000003A 4D39F5                              cmp r13, r14
+    77 0000003D 7C02                                jl Print_code
+    78 0000003F EB23                                jmp finish
+    79                                  
+    80                                          ;This code block outputs all the numbers in the array
+    81                                          Print_code:
+    82 00000041 B801000000                          mov rax, 1
+    83 00000046 48BF-                               mov rdi, output_format
+    83 00000048 [1F00000000000000] 
+    84 00000050 4B8B34EF                            mov rsi, [r15 + r13 * 8]
+    85 00000054 F2430F1004EF                        movsd xmm0, [r15 + r13 * 8]
+    86 0000005A E8(00000000)                        call printf
+    87                                  
+    88 0000005F 49FFC5                              inc r13
+    89 00000062 EBD6                                jmp array_size_code
+    90                                  
+    91                                          ;Completes the execution of the file
+    92                                          finish:
+    93 00000064 48BF-                               mov rdi, newline
+    93 00000066 [3F00000000000000] 
+    94 0000006E E8(00000000)                        call printf
+    95                                  
+    96 00000073 9D                                  popf
+    97 00000074 415F                                pop r15
+    98 00000076 415E                                pop r14
+    99 00000078 415D                                pop r13
+   100 0000007A 415C                                pop r12
+   101 0000007C 415B                                pop r11
+   102 0000007E 415A                                pop r10
+   103 00000080 4159                                pop r9
+   104 00000082 4158                                pop r8
+   105 00000084 5E                                  pop rsi
+   106 00000085 5F                                  pop rdi
+   107 00000086 5A                                  pop rdx
+   108 00000087 59                                  pop rcx
+   109 00000088 5B                                  pop rbx
+   110 00000089 5D                                  pop rbp
+   111 0000008A C3                                  ret
